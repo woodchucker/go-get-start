@@ -1,0 +1,6 @@
+/.DS_Store
+/api
+/go.mod
+/go.sum
+/main.go
+/vercel.json
