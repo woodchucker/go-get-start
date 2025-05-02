@@ -4,42 +4,49 @@ import (
 	"fmt"
 	"net/http"
 
-	. "github.com/tbxark/g4vercel"
+	gee "github.com/tbxark/g4vercel"
 )
 
-func Handler(w http.ResponseWriter, r *http.Request) {
-	server := New()
+var server = gee.Default()
 
-	server.GET("/", func(context *Context) {
-		context.JSON(200, H{
-			"message": "hello go from vercel !!!!",
+func init() {
+	server.GET("/", func(c *gee.Context) {
+		c.JSON(200, gee.H{
+			"message": "hello go from vercel!",
 		})
 	})
-	server.GET("/hello", func(context *Context) {
-		name := context.Query("name")
+
+	server.GET("/hello", func(c *gee.Context) {
+		name := c.Query("name")
 		if name == "" {
-			context.JSON(400, H{
+			c.JSON(400, gee.H{
 				"message": "name not found",
 			})
 		} else {
-			context.JSON(200, H{
+			c.JSON(200, gee.H{
 				"data": fmt.Sprintf("Hello %s!", name),
 			})
 		}
 	})
-	server.GET("/user/:id", func(context *Context) {
-		context.JSON(400, H{
-			"data": H{
-				"id": context.Param("id"),
+	server.GET("/user/:id", func(c *gee.Context) {
+		c.JSON(400, gee.H{
+			"data": gee.H{
+				"id": c.Param("id"),
 			},
 		})
 	})
-	server.GET("/long/long/long/path/*test", func(context *Context) {
-		context.JSON(200, H{
-			"data": H{
-				"url": context.Path,
+	server.GET("/long/long/long/path/*test", func(c *gee.Context) {
+		c.JSON(200, gee.H{
+			"data": gee.H{
+				"url": c.Path,
 			},
 		})
 	})
+
+}
+
+// Handler è compatibile sia con Vercel che con localhost
+func Handler(w http.ResponseWriter, r *http.Request) {
+	// Usa il metodo Handler() invece di ServeHTTP
 	server.Handle(w, r)
 }
